@@ -5,8 +5,12 @@ import StatCard from './state-card';
 import Logo from '@/components/shared/logo';
 import LoginButton from '../../../components/shared/login-button';
 import { Button } from '@/components/ui/button';
+import { auth } from '@/lib/auth';
+import { Input } from '@/components/ui/input';
+import PromptForm from './prompt-form';
 
-const Home = () => {
+const Home = async () => {
+	const session = await auth();
 	return (
 		<div className="px-4 py-16">
 			<div className="flex flex-col items-center text-center mb-16">
@@ -16,11 +20,15 @@ const Home = () => {
 				<p className="text-xl text-purple-200 mb-8">
 					Ignite your curiosity, illuminate your mind
 				</p>
-				<div className="relative">
+				<div className={`relative ${session && 'w-full max-w-md'}`}>
 					<div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-pink-600 rounded-lg blur"></div>
-					<LoginButton>
-						<Button variant="spark">Start Your Journey</Button>
-					</LoginButton>
+					{session ? (
+						<PromptForm />
+					) : (
+						<LoginButton>
+							<Button variant="spark">Start Your Journey</Button>
+						</LoginButton>
+					)}
 				</div>
 			</div>
 

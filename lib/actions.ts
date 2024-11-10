@@ -11,3 +11,13 @@ export const logout = async () => {
 	await signOut({ redirectTo: '/' });
 	revalidatePath('/');
 };
+
+// export const quizPrompt = async (FormData: FormData) => {
+// 	const rawFormData = {
+// 		text: FormData.get('prompt') as string,
+// 		redirectTo: '/quiz',
+// 	};
+// 	try{
+
+// 	}
+// };

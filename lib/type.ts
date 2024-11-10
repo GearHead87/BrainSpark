@@ -4,3 +4,10 @@ export interface QuizType {
 	answer: number;
 	explanation: string;
 }
+
+export interface ResultType {
+	quizId: string;
+	totalQuestions: number;
+	score: number;
+	resultId: string;
+}
