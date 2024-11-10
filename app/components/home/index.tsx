@@ -6,7 +6,6 @@ import Logo from '@/components/shared/logo';
 import LoginButton from '../../../components/shared/login-button';
 import { Button } from '@/components/ui/button';
 import { auth } from '@/lib/auth';
-import { Input } from '@/components/ui/input';
 import PromptForm from './prompt-form';
 
 const Home = async () => {
