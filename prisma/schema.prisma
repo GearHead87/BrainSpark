@@ -88,3 +88,9 @@ model Authenticator {
 
   @@id([userId, credentialID])
 }
+
+model Questions {
+  quizId         String @id @default(cuid())
+  questions      String
+  totalQuestions Int
+}

@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { GoogleGenerativeAI, HarmCategory, HarmBlockThreshold } from '@google/generative-ai';
-import { prisma } from '@/lib/prisma';
 
 // Define types for better type safety
 interface QuizQuestion {
@@ -14,9 +13,9 @@ interface QuizResponse {
 	quizQuestions: QuizQuestion[];
 }
 
-// interface ErrorResponse {
-// 	error: string;
-// }
+interface ErrorResponse {
+	error: string;
+}
 
 export async function POST(request: NextRequest) {
 	try {
@@ -35,6 +34,7 @@ export async function POST(request: NextRequest) {
 			topK: 32,
 			topP: 0.95,
 			maxOutputTokens: 2048,
+			response_mime_type: 'application/json',
 		};
 
 		const safetySettings = [
@@ -56,33 +56,34 @@ export async function POST(request: NextRequest) {
 			},
 		];
 
-		const fullPrompt = `Create 10 quiz questions about: ${prompt}
-
-Each question must have:
-- A clear question
-- Exactly 4 options
-- The correct answer index (0-3)
-- A brief explanation
-
-Response must be in this exact JSON format:
-{
-  "quizQuestions": [
+		const fullPrompt = `Generate exactly 10 quiz questions about the given topic. Each question must have:
+    - A clear, well-formed question
+    - Exactly 4 options
+    - The correct answer index (0-3)
+    - A brief but informative explanation
+    
+    Respond in this exact JSON format:
     {
-      "question": "string",
-      "options": ["string", "string", "string", "string"],
-      "answer": number,
-      "explanation": "string"
+      "quizQuestions": [
+        {
+          "question": "string",
+          "options": ["string", "string", "string", "string"],
+          "answer": number,
+          "explanation": "string"
+        }
+      ]
     }
-  ]
-}`;
+
+    The response must contain exactly 10 questions, be valid JSON, and follow the format precisely.`;
 
 		const result = await model.generateContent({
 			contents: [
 				{
 					role: 'user',
-					parts: [{ text: fullPrompt }],
+					parts: [{ text: prompt }],
 				},
 			],
+			systemInstruction: fullPrompt,
 			generationConfig,
 			safetySettings,
 		});
@@ -93,42 +94,38 @@ Response must be in this exact JSON format:
 			.replace(/```json/g, '')
 			.replace(/```/g, '');
 
-		// Parse and validate the response
-		const parsedQuiz: QuizResponse = JSON.parse(genQuiz);
+		// // Parse and validate the response
+		// let parsedQuiz: QuizResponse = JSON.parse(genQuiz);
 
-		// Validate number of questions
-		if (!parsedQuiz.quizQuestions || parsedQuiz.quizQuestions.length !== 10) {
-			throw new Error('Invalid number of questions generated');
-		}
+		// // Validate number of questions
+		// if (!parsedQuiz.quizQuestions || parsedQuiz.quizQuestions.length !== 10) {
+		// 	throw new Error('Invalid number of questions generated');
+		// }
 
-		// Validate each question
-		parsedQuiz.quizQuestions.forEach((question, index) => {
-			if (
-				!question.question ||
-				!Array.isArray(question.options) ||
-				question.options.length !== 4 ||
-				typeof question.answer !== 'number' ||
-				question.answer < 0 ||
-				question.answer > 3 ||
-				!question.explanation
-			) {
-				throw new Error(`Invalid question format at index ${index}`);
-			}
-		});
+		// // Validate each question
+		// parsedQuiz.quizQuestions.forEach((question, index) => {
+		// 	if (
+		// 		!question.question ||
+		// 		!Array.isArray(question.options) ||
+		// 		question.options.length !== 4 ||
+		// 		typeof question.answer !== 'number' ||
+		// 		question.answer < 0 ||
+		// 		question.answer > 3 ||
+		// 		!question.explanation
+		// 	) {
+		// 		throw new Error(`Invalid question format at index ${index}`);
+		// 	}
+		// });
 
-		// const quizId = crypto.randomUUID();
-
-		const quiz = await prisma.questions.create({
-			data: {
-				totalQuestions: 10,
-				questions: JSON.stringify(parsedQuiz.quizQuestions),
-			},
-		});
+		const quizId = crypto.randomUUID();
 
 		return NextResponse.json(
 			{
-				quizId: quiz.quizId,
+				quizId,
+				// quiz: parsedQuiz,
+                response,
 				success: true,
+                genQuiz,
 			},
 			{ status: 200 }
 		);
