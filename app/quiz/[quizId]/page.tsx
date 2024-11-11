@@ -6,13 +6,23 @@ import { useParams } from 'next/navigation';
 
 const QuizPage = () => {
 	const { quizId } = useParams<{ quizId: string }>();
-	const { data, isLoading } = useQuiz({ quizId });
-	console.log(quizId);
-	const quizQuestions = data as unknown as QuizType[];
+	const { data, isLoading, error } = useQuiz({ quizId });
 
 	if (isLoading) {
-		return <div>Loading...</div>;
+		return <div className="text-white flex justify-center items-center">Loading...</div>;
 	}
+
+	if (error) {
+		return <div className="text-white flex justify-center items-center">Error: {error}</div>;
+	}
+
+	if (typeof data === 'object' && 'error' in data) {
+		return (
+			<div className="text-white flex justify-center items-center">Error: {data.error}</div>
+		);
+	}
+
+	const quizQuestions = data as unknown as QuizType[];
 
 	return (
 		<div className="px-4 py-8">

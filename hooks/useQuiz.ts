@@ -5,10 +5,16 @@ import useSWR from 'swr';
 interface UseQuizProps {
 	quizId: string;
 }
-const useQuiz = ({ quizId }: UseQuizProps) => {
+interface UseQuizResponse {
+	data: QuizType[] | { error: string };
+	isLoading: boolean;
+	error: string | undefined;
+}
+
+const useQuiz = ({ quizId }: UseQuizProps): UseQuizResponse => {
 	const endPoint = `/api/quiz/${quizId}`;
-	const { data, error, isLoading, mutate } = useSWR<QuizType[]>(endPoint, fetcher);
-	return { data, error, isLoading, mutate };
+	const { data, error, isLoading } = useSWR<QuizType[]>(endPoint, fetcher);
+	return { data: data || { error: 'Quiz not found' }, error: error?.message, isLoading };
 };
 
 export default useQuiz;
