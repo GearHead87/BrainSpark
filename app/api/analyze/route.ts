@@ -83,11 +83,11 @@ async function analyzeLicensingWithGemini(metadata: { title: string; description
       
       Please carefully analyze for:
       1. Explicit license types (e.g., Creative Commons)
-      2. Licensing contact information or instructions
-      3. Mentions of licensing services or companies
-      4. Commercial licensing availability
-      5. Rights management companies or agencies mentioned
-      6. Any specific instructions about usage rights or licensing process
+      2. Licensing contact information or instructions (e.g., email, phone numbers, submission links).
+      3. Mentions of licensing services or companies (e.g., ViralHog, Newsflare).
+      4. Commercial licensing availability (explicitly or implied).
+      5. Rights management companies or agencies mentioned (if any).
+      6. Any specific instructions about usage rights or licensing process (e.g., whether attribution is required).
       
       Pay special attention to:
       - Email addresses containing "licensing" or similar terms
@@ -96,15 +96,15 @@ async function analyzeLicensingWithGemini(metadata: { title: string; description
       - Any mention of content licensing platforms or services
       
       Format your response as a JSON object with these fields:
-      {
-        "hasExplicitLicense": boolean,            // true if any form of licensing is mentioned
-        "licenseType": string,                    // e.g., "Commercial License through ViralHog", "Creative Commons", etc.
-        "canUseCommercially": boolean,            // true if commercial licensing is available
-        "requiresAttribution": boolean,           // true if attribution is required
-        "licensingContact": string | null,        // licensing contact information if provided
-        "licensingCompany": string | null,        // company handling licensing if mentioned
-        "notes": string                           // additional details about licensing terms and process
-      }
+     {
+  		"hasExplicitLicense": boolean,            // true if any form of licensing is mentioned
+  		"licenseType": string,                    // e.g., "Commercial License through ViralHog", "Creative Commons"
+  		"canUseCommercially": boolean,            // true if commercial licensing is available
+  		"requiresAttribution": boolean,           // true if attribution is required
+  		"licensingContact": string | null,        // licensing contact information if provided
+  		"licensingCompany": string | null,        // company handling licensing if mentioned
+  		"notes": string                           // additional details about licensing terms, process, or ambiguities
+	}
     `;
 
 	const result = await model.generateContent(prompt);
