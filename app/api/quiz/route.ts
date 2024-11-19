@@ -26,7 +26,6 @@ export async function POST(request: NextRequest) {
 		// Parse and validate request body
 		const body = await request.json();
 		const { prompt } = quizRequestSchema.parse(body);
-		console.log('prompt >>', prompt);
 
 		if (!prompt) {
 			return NextResponse.json({ error: 'Topic is required' }, { status: 400 });
@@ -106,8 +105,6 @@ Response must be in this exact JSON format:
 			throw new Error('Failed to parse generated quiz content');
 		}
 
-		console.log('genQuiz >>>', genQuiz);
-
 		// Parse and validate the response
 		let parsedQuiz: QuizResponse;
 		try {
@@ -116,8 +113,6 @@ Response must be in this exact JSON format:
 		} catch (jsonError) {
 			throw new Error('Invalid JSON format in generated quiz');
 		}
-
-		console.log('Parsed Quiz >>', parsedQuiz);
 
 		// Validate number of questions
 		if (!parsedQuiz.quizQuestions || parsedQuiz.quizQuestions.length !== 10) {
@@ -146,8 +141,6 @@ Response must be in this exact JSON format:
 			},
 		});
 
-		console.log('Database >>>', quiz);
-
 		return NextResponse.json(
 			{
 				quizId: quiz.quizId,
@@ -167,7 +160,7 @@ Response must be in this exact JSON format:
 			);
 		}
 
-		console.log('Quiz generation error:', error);
+		console.error('Quiz generation error:', error);
 		return NextResponse.json(
 			{
 				error: 'Failed to generate quiz',

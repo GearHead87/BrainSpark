@@ -19,7 +19,6 @@ export async function POST(request: NextRequest) {
 				{ status: 401 }
 			);
 		}
-		console.log(session);
 
 		const body = await request.json();
 

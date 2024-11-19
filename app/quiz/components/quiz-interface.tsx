@@ -164,7 +164,9 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions, quizId }) 
 						<button
 							className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity"
 							onClick={handleSubmit}
-							disabled={isSubmitting}
+							disabled={
+								isSubmitting || selectedAnswers[currentQuestion] === undefined
+							}
 						>
 							{isSubmitting ? <LoadingSpinner /> : 'Submit'}
 						</button>
@@ -172,6 +174,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions, quizId }) 
 						<button
 							className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity"
 							onClick={handleNextQuestion}
+							disabled={selectedAnswers[currentQuestion] === undefined}
 						>
 							Next
 							<ArrowRight className="w-4 h-4" />
