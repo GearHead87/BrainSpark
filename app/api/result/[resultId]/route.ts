@@ -2,9 +2,9 @@ import { prisma } from '@/lib/prisma';
 import { NextResponse } from 'next/server';
 import { ResultType } from '@/lib/type';
 
-export async function GET(request: Request, { params }: { params: { resultId: string } }) {
+export async function GET(request: Request, { params }: { params: Promise<{ resultId: string }> }) {
 	try {
-		const { resultId } = params;
+		const resultId = (await params).resultId;
 
 		const result = await prisma.result.findUnique({
 			where: { id: resultId },

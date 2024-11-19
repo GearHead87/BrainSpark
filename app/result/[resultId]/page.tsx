@@ -8,7 +8,7 @@ import ResultInterface from '../components/result-interface';
 
 const ResultPage = () => {
 	const router = useRouter();
-	const { resultId } = useParams();
+	const { resultId } = useParams<{ resultId: string }>();
 	const { data, isLoading } = useResult({ resultId: resultId as string });
 
 	useEffect(() => {
