@@ -21,33 +21,68 @@ const PromptForm = () => {
 	const [loading, setLoading] = useState(false);
 
 	useEffect(() => {
-		async function loadProviders() {
-			const csrf = await getCsrfToken();
-			setCsrfToken(csrf);
+		async function loadCsrfToken() {
+			try {
+				const csrf = await getCsrfToken();
+				setCsrfToken(csrf || '');
+			} catch (error) {
+				console.error('Failed to fetch CSRF token:', error);
+				// toast.error('Failed to load CSRF token. Please try again.');
+			}
 		}
-		loadProviders();
+		loadCsrfToken();
 	}, []);
 
 	const form = useForm<formSchemaProps>({
 		resolver: zodResolver(formSchema),
+		defaultValues: {
+			prompt: '',
+		},
 	});
 
 	const onSubmit = async (data: formSchemaProps) => {
+		const validationResult = formSchema.safeParse(data);
+		if (!validationResult.success) {
+			// toast.error(validationResult.error.errors[0].message);
+			return;
+		}
+
 		setLoading(true);
+
 		try {
 			const response = await fetch('/api/quiz', {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
+					...(csrfToken ? { 'X-CSRF-Token': csrfToken } : {}),
 				},
-				body: JSON.stringify(data),
+				body: JSON.stringify({
+					prompt: data.prompt.trim(), // Ensure no leading/trailing whitespace
+				}),
 			});
-			const { quizId } = await response.json();
-			setLoading(false);
-			router.push(`/quiz/${quizId}`);
+
+			// Parse response
+			const responseData = await response.json();
+
+			if (!response.ok) {
+				// Handle error responses
+				throw new Error(responseData.error || 'Failed to generate quiz');
+			}
+
+			// Check for quizId in the response
+			if (!responseData.quizId) {
+				throw new Error('No quiz ID received');
+			}
+
+			// Navigate to quiz
+			router.push(`/quiz/${responseData.quizId}`);
 		} catch (err) {
+			// More specific error handling
+			// const errorMessage = err instanceof Error ? err.message : String(err);
+			// toast.error(errorMessage || 'An unexpected error occurred');
+			console.error(err);
+		} finally {
 			setLoading(false);
-			console.log(err);
 		}
 	};
 	return (

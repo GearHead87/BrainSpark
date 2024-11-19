@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Brain, Lightbulb, ArrowRight, ArrowLeft } from 'lucide-react';
 import { QuizType } from '@/lib/type';
+import { useRouter } from 'next/navigation';
+import LoadingSpinner from '@/components/shared/loading-spinner';
 
 interface QuizInterfaceProps {
 	quizQuestions: QuizType[];
@@ -10,11 +12,13 @@ interface QuizInterfaceProps {
 }
 
 const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions, quizId }) => {
+	const router = useRouter();
 	const [currentQuestion, setCurrentQuestion] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
 	const [score, setScore] = useState(0);
 	const [showExplanation, setShowExplanation] = useState(false);
 	const [scoredQuestions, setScoredQuestions] = useState(new Set()); // Track questions scored
+	const [isSubmitting, setIsSubmitting] = useState(false);
 
 	// Handle answer selection
 	const handleAnswerSelect = (index: number) => {
@@ -51,16 +55,45 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions, quizId }) 
 		setCurrentQuestion((prev) => prev - 1);
 	};
 
-	const handleSubmit = () => {
-		// Get correct answers array
-		const correctAnswers = quizQuestions.map((q) => q.answer);
+	const handleSubmit = async () => {
+		try {
+			setIsSubmitting(true);
+			const response = await fetch('/api/result', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify({
+					selectedAnswers,
+					totalQuestions: quizQuestions.length,
+					marks: score,
+					quizId,
+				}),
+			});
 
-		console.log({
-			selectedAnswers,
-			totalQuestions: quizQuestions.length,
-			correctAnswers,
-			quizId,
-		});
+			const data = await response.json();
+
+			if (!response.ok) {
+				if (response.status === 401) {
+					// Handle unauthorized - maybe redirect to login
+					router.push('/');
+					return;
+				}
+
+				throw new Error(data.error || 'Failed to save quiz results');
+			}
+
+			if (data.success && data.resultId) {
+				router.push(`/result/${data.resultId}`);
+			} else {
+				throw new Error('Failed to save quiz results');
+			}
+		} catch (error) {
+			console.error('Error submitting quiz:', error);
+			// You might want to show an error message to the user here
+		} finally {
+			setIsSubmitting(false);
+		}
 	};
 
 	return (
@@ -131,8 +164,9 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions, quizId }) 
 						<button
 							className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity"
 							onClick={handleSubmit}
+							disabled={isSubmitting}
 						>
-							Submit
+							{isSubmitting ? <LoadingSpinner /> : 'Submit'}
 						</button>
 					) : (
 						<button

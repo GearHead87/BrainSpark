@@ -11,3 +11,11 @@ export interface ResultType {
 	score: number;
 	resultId: string;
 }
+
+
+export interface QuizQuestionType {
+	question: string;
+	options: string[];
+	answer: number;
+	explanation: string;
+}
