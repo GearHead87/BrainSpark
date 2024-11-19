@@ -26,7 +26,7 @@ const QuizPage = () => {
 
 	return (
 		<div className="px-4 py-8">
-			<QuizInterface quizQuestions={quizQuestions} />
+			<QuizInterface quizQuestions={quizQuestions} quizId={quizId} />
 		</div>
 	);
 };

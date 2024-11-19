@@ -4,7 +4,6 @@ import { NextResponse } from 'next/server';
 
 export async function GET(request: Request, { params }: { params: Promise<{ quizId: string }> }) {
 	const quizId = (await params).quizId;
-	console.log('quizId route.ts ->', quizId);
 
 	try {
 		const quiz = await prisma.questions.findUnique({

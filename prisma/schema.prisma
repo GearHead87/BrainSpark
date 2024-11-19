@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
 datasource db {
@@ -27,6 +28,7 @@ model User {
   accounts      Account[]
   sessions      Session[]
   role          UserRole?       @default(USER)
+  results       Result[] // Changed relation name
   // Optional for WebAuthn support
   Authenticator Authenticator[]
 
@@ -89,8 +91,28 @@ model Authenticator {
   @@id([userId, credentialID])
 }
 
+model Result {
+  id              String    @id @default(cuid())
+  userId          String
+  quizId          String
+  selectedAnswers Json // Storing array of selected answers as JSON
+  marks           Int
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade, map: "user_results")
+  quiz            Questions @relation(fields: [quizId], references: [quizId], onDelete: Cascade, map: "quiz_results")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([quizId])
+}
+
 model Questions {
-  quizId         String @id @default(cuid())
+  quizId         String   @id @default(cuid())
   questions      String
   totalQuestions Int
+  results        Result[] // Existing relation to Result
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
