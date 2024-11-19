@@ -6,9 +6,10 @@ import { QuizType } from '@/lib/type';
 
 interface QuizInterfaceProps {
 	quizQuestions: QuizType[];
+	quizId: string;
 }
 
-const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions }) => {
+const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions, quizId }) => {
 	const [currentQuestion, setCurrentQuestion] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
 	const [score, setScore] = useState(0);
@@ -48,6 +49,18 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions }) => {
 	const handlePreviousQuestion = () => {
 		setShowExplanation(false);
 		setCurrentQuestion((prev) => prev - 1);
+	};
+
+	const handleSubmit = () => {
+		// Get correct answers array
+		const correctAnswers = quizQuestions.map((q) => q.answer);
+
+		console.log({
+			selectedAnswers,
+			totalQuestions: quizQuestions.length,
+			correctAnswers,
+			quizId,
+		});
 	};
 
 	return (
@@ -114,14 +127,22 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions }) => {
 						<ArrowLeft className="w-4 h-4" />
 						Previous
 					</button>
-					<button
-						className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity"
-						onClick={handleNextQuestion}
-						disabled={currentQuestion === quizQuestions.length - 1}
-					>
-						Next
-						<ArrowRight className="w-4 h-4" />
-					</button>
+					{currentQuestion === quizQuestions.length - 1 ? (
+						<button
+							className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity"
+							onClick={handleSubmit}
+						>
+							Submit
+						</button>
+					) : (
+						<button
+							className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gradient-to-r from-purple-500 to-pink-500 text-white hover:opacity-90 transition-opacity"
+							onClick={handleNextQuestion}
+						>
+							Next
+							<ArrowRight className="w-4 h-4" />
+						</button>
+					)}
 				</div>
 			</motion.div>
 
