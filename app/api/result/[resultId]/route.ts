@@ -18,6 +18,8 @@ export async function GET(request: Request, { params }: { params: Promise<{ resu
 			return NextResponse.json({ error: 'Result not found' }, { status: 404 });
 		}
 
+		const parsedQuestions = JSON.parse(result.quiz.questions);
+
 		const resultData: ResultType = {
 			resultId: result.id,
 			quizId: result.quizId,
@@ -25,6 +27,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ resu
 			score: result.marks,
 			totalQuestions: result.quiz.totalQuestions,
 			selectedAnswers: result.selectedAnswers as number[],
+			questions: parsedQuestions,
 			createdAt: result.createdAt,
 		};
 

@@ -115,6 +115,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions, quizId }) 
 				onPreviousQuestion={handlePreviousQuestion}
 				onNextQuestion={handleNextQuestion}
 				onSubmit={handleSubmit}
+				isReviewMode={false}
 			/>
 
 			{/* Explanation Card */}

@@ -5,6 +5,7 @@ import confetti from 'canvas-confetti';
 import useResult from '@/hooks/useResult';
 import { ResultType } from '@/lib/type';
 import ResultInterface from '../components/result-interface';
+import DetailedResultView from '../components/detailed-result-view';
 
 const ResultPage = () => {
 	const router = useRouter();
@@ -37,13 +38,21 @@ const ResultPage = () => {
 		return <div>No result data available</div>;
 	}
 
-	const { score = 0, totalQuestions = 0, quizId = '' } = data as ResultType;
+	const {
+		score = 0,
+		totalQuestions = 0,
+		quizId = '',
+		questions = [],
+		selectedAnswers = [],
+	} = data as ResultType;
+
 	const percentage = totalQuestions > 0 ? (score / totalQuestions) * 100 : 0;
 
 	const onRetry = () => {
 		router.push(`/quiz/${quizId}`);
 		return;
 	};
+
 	const onShare = () => {
 		if (navigator.share) {
 			navigator.share({
@@ -58,8 +67,9 @@ const ResultPage = () => {
 		}
 		return;
 	};
+
 	return (
-		<div className="px-4">
+		<div className="px-4 space-y-8">
 			<ResultInterface
 				score={score}
 				percentage={percentage}
@@ -67,6 +77,7 @@ const ResultPage = () => {
 				onRetry={onRetry}
 				onShare={onShare}
 			/>
+			<DetailedResultView questions={questions} selectedAnswers={selectedAnswers} />
 		</div>
 	);
 };
