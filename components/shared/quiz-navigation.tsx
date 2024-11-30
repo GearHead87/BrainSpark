@@ -23,7 +23,7 @@ const Navigation: React.FC<NavigationProps> = ({
     onSubmit
 }) => {
     return (
-        <div className="flex justify-between">
+        <div className="flex justify-between mb-8">
             <button
                 className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors"
                 onClick={onPreviousQuestion}
