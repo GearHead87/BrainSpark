@@ -28,7 +28,7 @@ const Navigation: React.FC<NavigationProps> = ({
 	const isFirstQuestion = currentQuestion === 0;
 
 	return (
-		<div className="flex justify-between mb-8">
+		<div className="flex justify-between my-8">
 			<button
 				className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
 				onClick={onPreviousQuestion}
