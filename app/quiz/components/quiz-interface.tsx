@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { QuizType } from '@/lib/type';
 import { useRouter } from 'next/navigation';
 import QuestionCard from '@/components/shared/question-card';
-import ExplanationCard from '@/components/shared/quiz-explanation-card';
+// import ExplanationCard from '@/components/shared/quiz-explanation-card';
 import QuizProgress from '@/components/shared/quiz-progress';
 import Navigation from '@/components/shared/quiz-navigation';
 
@@ -17,7 +17,7 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions, quizId }) 
 	const [currentQuestion, setCurrentQuestion] = useState(0);
 	const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
 	const [score, setScore] = useState(0);
-	const [showExplanation, setShowExplanation] = useState(false);
+	// const [showExplanation, setShowExplanation] = useState(false); 
 	const [scoredQuestions, setScoredQuestions] = useState(new Set());
 	const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -38,16 +38,16 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions, quizId }) 
 			setScoredQuestions(updatedScoredQuestions);
 		}
 
-		setShowExplanation(true);
+		// setShowExplanation(true);
 	};
 
 	const handleNextQuestion = () => {
-		setShowExplanation(false);
+		// setShowExplanation(false);
 		setCurrentQuestion((prev) => prev + 1);
 	};
 
 	const handlePreviousQuestion = () => {
-		setShowExplanation(false);
+		// setShowExplanation(false);
 		setCurrentQuestion((prev) => prev - 1);
 	};
 
@@ -119,9 +119,9 @@ const QuizInterface: React.FC<QuizInterfaceProps> = ({ quizQuestions, quizId }) 
 			/>
 
 			{/* Explanation Card */}
-			{showExplanation && (
+			{/* {showExplanation && (
 				<ExplanationCard explanation={quizQuestions[currentQuestion].explanation} />
-			)}
+			)} */}
 		</div>
 	);
 };
