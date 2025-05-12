@@ -11,6 +11,7 @@ export interface ResultType {
 	score: number;
 	totalQuestions: number;
 	selectedAnswers: number[];
+	questions: QuizQuestionType[];
 	createdAt?: Date;
 }
 
